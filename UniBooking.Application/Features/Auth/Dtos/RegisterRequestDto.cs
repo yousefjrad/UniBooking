@@ -12,7 +12,7 @@ namespace UniBooking.Application.Features.Auth.Dtos
      string LastName,
      string Email,
      string Password,
-     Guid TenantId,
-     UserRole Role);
+     Guid TenantId
+     );
 
 }

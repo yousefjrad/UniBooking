@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using UniBooking.Application.Common.Interfaces;
 using UniBooking.Application.Features.Auth;
+using UniBooking.Application.Features.Bookings;
+using UniBooking.Application.Features.Resources;
+using UniBooking.Domain.Entities;
 using UniBooking.Infrastructure.Persistence;
 using UniBooking.Infrastructure.Persistence.Repositories;
 using UniBooking.Infrastructure.Services;
@@ -24,6 +27,13 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<AuthService>();
 
+builder.Services.AddScoped<IResourceRepository, ResourcesRepository>();
+builder.Services.AddScoped<ResourceService>();
+
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<BookingService>();
+
+
 // --- Authentication (JWT) ---
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException("Jwt:Key غير موجود في appsettings.json");
@@ -31,8 +41,11 @@ var jwtKey = builder.Configuration["Jwt:Key"]
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.IncludeErrorDetails = true;
         options.TokenValidationParameters = new TokenValidationParameters
         {
+
+
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
@@ -93,6 +106,20 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    if (!db.Tenants.Any())
+    {
+        db.Tenants.AddRange(
+            new Tenant { Name = "جامعة دمشق" },
+            new Tenant { Name = "الجامعة الافتراضية السورية" }
+        );
+        db.SaveChanges();
+    }
+}
 
 // ==========================================
 // 2. إعداد الـ Middleware Pipeline

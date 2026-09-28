@@ -1,6 +1,7 @@
 ﻿using UniBooking.Application.Common.Interfaces;
 using UniBooking.Application.Features.Auth.Dtos;
 using UniBooking.Domain.Entities;
+using UniBooking.Domain.Enums;
 
 namespace UniBooking.Application.Features.Auth;
 
@@ -33,7 +34,7 @@ public class AuthService
             Email = request.Email,
             PasswordHash = _passwordHasher.Hash(request.Password),
             TenantId = request.TenantId,
-            Role = request.Role
+            Role = UserRole.Admin
         };
 
         await _userRepository.AddAsync(user);
