@@ -14,9 +14,11 @@ namespace UniBooking.Infrastructure.Persistence.Repositories
         private readonly AppDbContext _context;
 
         public ResourcesRepository(AppDbContext context)=> _context = context;
-        
 
-        public async Task <Resource?> GetByIdAsync(Guid id) => await _context.Resources.FindAsync(id);
+
+        public async Task<Resource?> GetByIdAsync(Guid id, Guid tenantId) =>
+        await _context.Resources
+        .FirstOrDefaultAsync(r => r.Id == id && r.TenantId == tenantId);
 
         public async Task<List<Resource>> GetAllAsync(Guid tenantId)=>
             await _context.Resources.AsNoTracking().Where(x => x.TenantId == tenantId && x.IsActive).ToListAsync();

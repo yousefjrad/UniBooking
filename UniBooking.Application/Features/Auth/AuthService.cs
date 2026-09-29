@@ -2,6 +2,7 @@
 using UniBooking.Application.Features.Auth.Dtos;
 using UniBooking.Domain.Entities;
 using UniBooking.Domain.Enums;
+using UniBooking.Domain.Exceptions;
 
 namespace UniBooking.Application.Features.Auth;
 
@@ -24,9 +25,8 @@ public class AuthService
     public async Task<AuthResponseDto> RegisterAsync(RegisterRequestDto request)
     {
         if (await _userRepository.ExistsByEmailAsync(request.Email))
-        {
-            throw new InvalidOperationException("Email Already Exist)");
-        }
+            throw new ConflictException("Email Already Exists");
+
         var user = new User
         {
             FirstName = request.FirstName,

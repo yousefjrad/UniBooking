@@ -20,26 +20,17 @@ namespace UniBooking.WebApi.Controllers
         private Guid CurrentUserId =>
         Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         private string CurrentUserFullName =>
-        User.FindFirstValue(ClaimTypes.Email) ?? "مستخدم";
+         User.FindFirstValue(ClaimTypes.Name) ?? "مستخدم";
 
         [HttpPost]
-        public async Task<ActionResult<BookingDto>> Create (CreateBookingDto dto , string UserName)
+        public async Task<ActionResult<BookingDto>> Create(CreateBookingDto dto)
         {
-            try
-            {
-                var result = await _bookingService.CreateAsync(dto, CurrentUserId, CurrentUserFullName);
-                return CreatedAtAction(nameof(GetMyBookings), null, result);
-
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new { message = ex.Message });
-            }
+            var result = await _bookingService.CreateAsync(dto, CurrentUserId, CurrentUserFullName, CurrentTenantId);
+            return CreatedAtAction(nameof(GetMyBookings), null, result);
         }
+
+        private Guid CurrentTenantId =>
+            Guid.Parse(User.FindFirstValue("TenantId")!);
 
         [HttpGet("mine")]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetMyBookings()

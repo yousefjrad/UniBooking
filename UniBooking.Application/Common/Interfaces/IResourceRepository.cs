@@ -10,7 +10,7 @@ namespace UniBooking.Application.Common.Interfaces
 {
     public interface IResourceRepository
     {
-        Task<Resource?> GetByIdAsync(Guid id);
+        Task<Resource?> GetByIdAsync(Guid id , Guid tenantId);
         Task<List<Resource>> GetAllAsync(Guid tenantId);
 
         Task<List<Resource>> GetAvailableAsync(Guid tenantId, int minCapacity);

@@ -17,29 +17,9 @@ public class AuthController : ControllerBase
 
     [HttpPost("register")]
     public async Task<ActionResult<AuthResponseDto>> Register(RegisterRequestDto request)
-    {
-        try
-        {
-            var result = await _authService.RegisterAsync(request);
-            return Ok(result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(new { message = ex.Message });
-        }
-    }
+        => Ok(await _authService.RegisterAsync(request));
 
     [HttpPost("login")]
     public async Task<ActionResult<AuthResponseDto>> Login(LoginRequestDto request)
-    {
-        try
-        {
-            var result = await _authService.LoginAsync(request);
-            return Ok(result);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return Unauthorized(new { message = ex.Message });
-        }
-    }
+    => Ok(await _authService.LoginAsync(request));
 }

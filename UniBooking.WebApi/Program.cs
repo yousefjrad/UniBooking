@@ -10,6 +10,7 @@ using UniBooking.Domain.Entities;
 using UniBooking.Infrastructure.Persistence;
 using UniBooking.Infrastructure.Persistence.Repositories;
 using UniBooking.Infrastructure.Services;
+using UniBooking.WebApi.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -107,6 +108,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -120,7 +122,7 @@ using (var scope = app.Services.CreateScope())
         db.SaveChanges();
     }
 }
-
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 // ==========================================
 // 2. إعداد الـ Middleware Pipeline
 // ==========================================

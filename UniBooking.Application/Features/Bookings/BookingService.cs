@@ -7,6 +7,7 @@ using UniBooking.Application.Common.Interfaces;
 using UniBooking.Application.Features.Bookings.DTOs;
 using UniBooking.Domain.Entities;
 using UniBooking.Domain.Enums;
+using UniBooking.Domain.Exceptions;
 
 namespace UniBooking.Application.Features.Bookings
 {
@@ -21,16 +22,16 @@ namespace UniBooking.Application.Features.Bookings
             _resourceRepository = resourceRepository;
         }
 
-       public async Task<BookingDto> CreateAsync(CreateBookingDto dto , Guid UserId , string UserFullName)
+       public async Task<BookingDto> CreateAsync(CreateBookingDto dto , Guid UserId , string UserFullName , Guid TenantId)
         {
             _CheckTimeOfNewBooking(dto.StartTime, dto.EndTime);
 
-            var resource = await _resourceRepository.GetByIdAsync(dto.ResourceId)
-                ?? throw new KeyNotFoundException("Resource Not Found");
+            var resource = await _resourceRepository.GetByIdAsync(dto.ResourceId , TenantId)
+                ?? throw new NotFoundException("Resource Not Found");
 
             var HasConflict = await _bookingRepository.HasConflictAsync(dto.ResourceId, dto.StartTime, dto.EndTime);
             if (HasConflict)
-                throw new InvalidOperationException("Conflict");
+                throw new ConflictException("Conflict");
             var booking = new Booking
             {
                 ResourceId = dto.ResourceId,
@@ -48,9 +49,9 @@ namespace UniBooking.Application.Features.Bookings
         private static void _CheckTimeOfNewBooking(DateTime StartTime, DateTime EndTime)
         {
             if (StartTime >= EndTime)
-                throw new InvalidOperationException("Start Time Should Be Before End Time");
+                throw new BadRequestException("Start Time Should Be Before End Time");
             if (StartTime < DateTime.UtcNow)
-                throw new InvalidOperationException("Cannot book for a past date/time");
+                throw new BadRequestException("Cannot book for a past date/time");
 
         }
 

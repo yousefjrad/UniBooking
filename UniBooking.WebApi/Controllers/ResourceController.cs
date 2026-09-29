@@ -38,7 +38,7 @@ public class ResourcesController : ControllerBase
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<ResourceDto>> GetById(Guid id)
     {
-        var result = await _resourceService.GetByIdAsync(id);
+        var result = await _resourceService.GetByIdAsync(id, CurrentTenantId);
         return result is null ? NotFound() : Ok(result);
     }
 

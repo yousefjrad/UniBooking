@@ -38,11 +38,11 @@ namespace UniBooking.Application.Features.Resources
             return  resources.Select(r => MapToDto(r)).ToList();
                 
         }
-   
-        public async Task<ResourceDto?> GetByIdAsync(Guid id)
+
+        public async Task<ResourceDto?> GetByIdAsync(Guid id, Guid tenantId)
         {
-            var resource = await _resourceRepository.GetByIdAsync(id);
-            return resource is null ? null : MapToDto(resource) ;
+            var resource = await _resourceRepository.GetByIdAsync(id, tenantId);
+            return resource is null ? null : MapToDto(resource);
         }
 
         public async Task<List<ResourceDto>> GetAvailableAsync(Guid tenantId, int minCapacity)
