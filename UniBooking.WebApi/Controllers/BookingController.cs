@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using UniBooking.Application.Features.Bookings;
 using UniBooking.Application.Features.Bookings.DTOs;
+using UniBooking.Domain.Entities;
 
 namespace UniBooking.WebApi.Controllers
 {
@@ -38,6 +39,12 @@ namespace UniBooking.WebApi.Controllers
                 var result = _bookingService.GetMyBookingAsync(CurrentUserId , CurrentUserFullName);
                 return Ok(result);
         }
-        
+
+        [HttpPut("{id:guid}/cancel")]
+        public async Task<IActionResult> Cancel(Guid Id)
+        {
+            await _bookingService.CancelAsync(Id , CurrentUserId);
+            return NoContent();
+        }
     }
 }

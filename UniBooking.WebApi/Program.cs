@@ -11,6 +11,9 @@ using UniBooking.Infrastructure.Persistence;
 using UniBooking.Infrastructure.Persistence.Repositories;
 using UniBooking.Infrastructure.Services;
 using UniBooking.WebApi.Middlewares;
+using FluentValidation;
+using UniBooking.Application.Features.Auth.Validators;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +25,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+
+
 // --- Repositories & Application Services ---
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<AuthService>();
+
+
 
 builder.Services.AddScoped<IResourceRepository, ResourcesRepository>();
 builder.Services.AddScoped<ResourceService>();
@@ -58,10 +66,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+
+
+
 builder.Services.AddAuthorization();
 
 // --- Controllers ---
 builder.Services.AddControllers();
+
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+
+builder.Services.AddControllers()
+    .AddFluentValidation(fv =>
+        fv.RegisterValidatorsFromAssemblyContaining<RegisterRequestValidator>());
 
 // --- Swagger (مع دعم JWT في الواجهة) ---
 builder.Services.AddEndpointsApiExplorer();

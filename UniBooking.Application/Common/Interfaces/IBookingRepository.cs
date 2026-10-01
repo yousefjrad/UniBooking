@@ -12,5 +12,8 @@ namespace UniBooking.Application.Common.Interfaces
         Task<bool> HasConflictAsync(Guid resourceId, DateTime start, DateTime end);
         Task AddAsync(Booking booking);
         Task<List<Booking>> GetByUserAsync(Guid userId);
+
+        Task<Booking?> GetByIdAsync(Guid id);
+        Task UpdateAsync(Booking booking);
     }
 }

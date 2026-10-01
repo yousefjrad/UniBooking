@@ -38,6 +38,16 @@ namespace UniBooking.Infrastructure.Persistence.Repositories
                 .OrderByDescending(b => b.StartTime)
                 .ToListAsync();
         }
+
+        public async Task<Booking?> GetByIdAsync(Guid BookingId)
+        =>
+            await _context.Bookings.FindAsync(BookingId);
+
+        public async Task UpdateAsync(Booking booking)
+        {
+            _context.Bookings.Update(booking);
+            await _context.SaveChangesAsync();
+        }
     }
     
 }

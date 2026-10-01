@@ -36,6 +36,7 @@ public class ExceptionHandlingMiddleware
             ConflictException => (StatusCodes.Status409Conflict, "تعارض"),
             BadRequestException => (StatusCodes.Status400BadRequest, "طلب غير صالح"),
             UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "غير مصرح"),
+            ForbiddenException => (StatusCodes.Status403Forbidden, "ممنوع"),
             _ => (StatusCodes.Status500InternalServerError, "خطأ داخلي")
         };
 

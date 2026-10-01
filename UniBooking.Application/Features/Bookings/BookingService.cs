@@ -24,8 +24,6 @@ namespace UniBooking.Application.Features.Bookings
 
        public async Task<BookingDto> CreateAsync(CreateBookingDto dto , Guid UserId , string UserFullName , Guid TenantId)
         {
-            _CheckTimeOfNewBooking(dto.StartTime, dto.EndTime);
-
             var resource = await _resourceRepository.GetByIdAsync(dto.ResourceId , TenantId)
                 ?? throw new NotFoundException("Resource Not Found");
 
@@ -46,14 +44,6 @@ namespace UniBooking.Application.Features.Bookings
 
             return new BookingDto(booking.Id, booking.ResourceId, UserFullName , resource.Name , booking.StartTime , booking.EndTime , booking.Status.ToString() , booking.Notes);
         }
-        private static void _CheckTimeOfNewBooking(DateTime StartTime, DateTime EndTime)
-        {
-            if (StartTime >= EndTime)
-                throw new BadRequestException("Start Time Should Be Before End Time");
-            if (StartTime < DateTime.UtcNow)
-                throw new BadRequestException("Cannot book for a past date/time");
-
-        }
 
         public async Task<List<BookingDto>> GetMyBookingAsync(Guid userId  , string userFullName)
         {
@@ -69,6 +59,21 @@ namespace UniBooking.Application.Features.Bookings
                   b.Status.ToString(),
                   b.Notes
                 )).ToList();
+        }
+
+        public async Task CancelAsync(Guid BookingId ,Guid UserId)
+        {
+            var booking = await _bookingRepository.GetByIdAsync(BookingId)
+            ?? throw new NotFoundException("Booking Not Found");
+
+            if (booking.UserId != UserId)
+                throw new ForbiddenException("Cannot Cancels Book Not Yours");
+
+            if(booking.Status == BookingStatus.Cancelled)
+                throw new BadRequestException("Booking Already Cancelled");
+
+            booking.Status = BookingStatus.Cancelled;
+            await _bookingRepository.UpdateAsync(booking);
         }
 
     }

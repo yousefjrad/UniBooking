@@ -17,6 +17,8 @@ namespace UniBooking.Application.Common.Interfaces
 
         Task AddAsync (Resource resource);
 
+        Task UpdateAsync (Resource resource);
+
         
     }
 }

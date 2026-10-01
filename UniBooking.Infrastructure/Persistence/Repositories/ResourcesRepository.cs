@@ -34,5 +34,11 @@ namespace UniBooking.Infrastructure.Persistence.Repositories
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task UpdateAsync(Resource resource)
+        {
+            _context.Resources.Update(resource);
+            await _context.SaveChangesAsync();
+        }
     }
 }
